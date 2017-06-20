@@ -87,6 +87,7 @@ module Beaker
 
       state = YAML::Store.new(SubcommandUtil::SUBCOMMAND_STATE)
       state.transaction do
+        state['saved_options'] = options_to_write
         state['provisioned'] = false
       end
     end
@@ -209,6 +210,9 @@ module Beaker
 
       state.transaction {
         state.delete('provisioned')
+        File.open(SubcommandUtil::SUBCOMMAND_OPTIONS, 'w') do |f|
+          f.write(state['saved_options'].to_yaml)
+        end
       }
     end
   end
